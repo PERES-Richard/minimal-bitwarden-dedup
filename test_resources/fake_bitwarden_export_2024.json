@@ -40,6 +40,33 @@
     },
     {
       "passwordHistory": null,
+      "revisionDate": "2024-01-27T13:16:10.798Z",
+      "creationDate": "2024-01-27T13:16:10.798Z",
+      "deletedDate": null,
+      "id": "abc123-def456",
+      "organizationId": null,
+      "folderId": null,
+      "type": 1,
+      "reprompt": 0,
+      "name": "My super website with different dates",
+      "notes": null,
+      "favorite": false,
+      "login": {
+        "fido2Credentials": [],
+        "uris": [
+          {
+            "match": null,
+            "uri": "https://super/login"
+          }
+        ],
+        "username": "bob",
+        "password": "alice",
+        "totp": null
+      },
+      "collectionIds": null
+    },
+    {
+      "passwordHistory": null,
       "revisionDate": "2024-01-26T18:16:10.798Z",
       "creationDate": "2024-01-26T14:15:10.798Z",
       "deletedDate": null,
@@ -57,6 +84,33 @@
           {
             "match": null,
             "uri": "https://awesome/login"
+          }
+        ],
+        "username": "peres",
+        "password": "richard123",
+        "totp": null
+      },
+      "collectionIds": null
+    },
+    {
+      "passwordHistory": null,
+      "revisionDate": "2024-01-26T18:16:10.798Z",
+      "creationDate": "2024-01-26T14:15:10.798Z",
+      "deletedDate": null,
+      "id": "ran366-aze887",
+      "organizationId": null,
+      "folderId": null,
+      "type": 1,
+      "reprompt": 0,
+      "name": "My awesome website with 2 URIs",
+      "notes": null,
+      "favorite": false,
+      "login": {
+        "fido2Credentials": [],
+        "uris": [
+          {
+            "match": null,
+            "uri": "https://awesome/login?randomstuff=added"
           }
         ],
         "username": "peres",

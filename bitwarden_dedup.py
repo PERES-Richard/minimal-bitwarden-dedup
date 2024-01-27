@@ -1,8 +1,8 @@
 import json
 
 # Your RAM disk file paths here
-VAULT_WITH_DUPS_PATH = "/mnt/ramdisk/my_bitwarden_export.json"
-VAULT_DEDUPED_OUTPUT_PATH = "/mnt/ramdisk/my_unencrypted_deduped_bitwarden_export.json"
+VAULT_WITH_DUPS_PATH = "/mnt/ramdisk/bitwarden_export.json"
+VAULT_DEDUPED_OUTPUT_PATH = "/mnt/ramdisk/bitwarden_deduped.json"
 
 def dedup(vault_with_dups_path, vault_deduped_output_path):
     with open(vault_with_dups_path, encoding='utf-8', mode='r') as vaultfile:
@@ -15,7 +15,7 @@ def dedup(vault_with_dups_path, vault_deduped_output_path):
     items = vault_json["items"]
 
     # use a set to detect duplicates.
-    # two json item objects are duplicates if and only if, after their "id" keys are removed, they 
+    # two json item objects are duplicates if and only if, after their "id" keys are removed, they
     # have the same string representations (same value of json.dumps).
     item_identities = set()
 
@@ -23,16 +23,48 @@ def dedup(vault_with_dups_path, vault_deduped_output_path):
     deduped_items = []
 
     for item in items:
+        # Save comparison fields before 'ignored deletion'
         item_id = item["id"]
-        # delete id since it's the one thing that's different in otherwise-exact duplicate items
-        # rather than `del` it, just set it to "", since otherwise it moves the key in the ordered dict, which results
-        # in a different ordering in the json output.
+        item_revision_date = item["revisionDate"]
+        item_creation_date = item["creationDate"]
+        item_folder_id = item["folderId"]
+
+        # Ignore not exact uri match field for comparison
+        hasUri = False
+        try:
+            item_login = item["login"]
+            item_uris = item_login["uris"]
+            if len(item_uris) > 0:
+                hasUri = True
+                item_match_uri = item_uris[0]["uri"]
+        # Do nothing if no URI set
+        except AttributeError:
+            pass
+        except KeyError:
+            pass
+
+        # Ignore fields for comparison by deleting id, revisionDate, creationDate, folderId and match uri (if any)
+        # since those can be different in otherwise-exact duplicate items rather than `del` it, just set it to ""
         item["id"] = ""
+        item["revisionDate"] = ""
+        item["creationDate"] = ""
+        item["folderId"] = ""
+        if hasUri:
+            item["login"]["uris"][0]["uri"] = ""
+
+        # Compare..
         item_identity = json.dumps(item)
         if item_identity not in item_identities:
             item_identities.add(item_identity)
-            # add the id back 
+
+            # add the fields back before append current item in deduped list
             item["id"] = item_id
+            item["revisionDate"] = item_revision_date
+            item["creationDate"] = item_creation_date
+            item["folderId"] = item_folder_id
+            if hasUri:
+                item["login"]["uris"][0]["uri"] = item_match_uri
+
             deduped_items.append(item)
 
     vault_json["items"] = deduped_items
@@ -46,4 +78,3 @@ def dedup(vault_with_dups_path, vault_deduped_output_path):
 
 if __name__ == "__main__":
     dedup(VAULT_WITH_DUPS_PATH, VAULT_DEDUPED_OUTPUT_PATH)
-
